@@ -1,0 +1,38 @@
+Title: The Effect of Wording in HashTag’s in Twitter Topics
+
+Scope: Twitter is a famous Social Media platform to convey ideas, news and events. The success of an idea to spread however is dependent on several factors. Most likely the most important factor is the poster who actually initiates the subject, how influencer he/she is, how many followers he/she have and so on. Another factor however is the tagging of topic however namely the HashTag(s)
+
+This project is aimed to work on the public Twitter ecosystem and apply several text analytics approaches to fully understand the positive/negative impact of HashTag texting to the success of the topic. 
+
+Timeline: The initial step will be to get data from the Twitter Network 
+
+
+Project Proposal : 25 Feb 2018  (this document)
+
+Intermediate Report : 01 Apr 2018 which will include
+	- The Twitter Database/API accesses and getting data
+	- The identification of successful and unsuccessful HashTag texts
+	-The initial insights of HashTag texts and their impact on to the successful
+
+Demo and Project codes: 9 May which will include
+- Final Executables / Python code / Architecture Diagram
+- Demo
+
+Related Work: 
+The effect of wording on message propagation: Topic- and author-controlled natural experiments on Twitter 
+https://arxiv.org/abs/1405.1438
+
+The  Approach:
+
+After succesfully Mining the required Data from using Public API and spiders. The Data Analytic approach will be used. The features of the tweets including but not limited to the following will be extracted.  
+-	The number of re-tweets of the Topic when used with this HashTag for the same user compared to other HashTags
+-	The number of followers of the user
+-	The length of the HashTag
+-	The number of HashTags
+-	The number of distinctive Stem/Prefix/Postfix in the HashTag and etc
+
+Example: Comparing the success of the  
+	#Beşiktaş vs #Beşiktaşk vs #BeşiktaşımZirvedesin vs #SüpersinBeşiktaş HashTags for the same event/news.
+
+Evaluation 
+The Evaluation will include different users having different wordings but the same subject with a Train/Test split approach. A prediction will be done with a k-crossfold approach to identify if the effect of HashTag prediction is having high accuracy or not.
