@@ -9,7 +9,7 @@ import time
 import sys
 from TweetScraper.twitterapi import *
 from TweetScraper.twitterapi.tweet import Tweet
-import TweetScraper.twitterapi.twitter_api_config as twitter_api_config
+import TweetScraper.twitterapi.twitter_api_cfg as twitter_api_config
 
 
 def main():
