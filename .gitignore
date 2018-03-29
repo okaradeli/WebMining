@@ -1,4 +1,5 @@
 Data/
 pyenv/
+TweetScraper/twitterapi/twitter_api_cfg.py
 
 *.pyc
