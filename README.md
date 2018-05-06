@@ -2,6 +2,10 @@
 PhD-Web Mining course and related material
 It is based on the "TweetScraper" API  
 
+C:\Program Files\MongoDB\Server\3.6\bin>mongod
+C:\Users\math\PycharmProjects\WebMining>scrapy crawl TweetScraper -a query="besiktas,beşiktaşk,#besiktas,#beşiktaş,#beşiktaşk" -a crawl_user=True
+
+
 
 # Introduction #
 `TweetScraper` can get tweets from [Twitter Search](https://twitter.com/search-home). 

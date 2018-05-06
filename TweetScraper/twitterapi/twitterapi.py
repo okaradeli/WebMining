@@ -40,6 +40,7 @@ def main():
                     continue
 
                 print("New record. ID="+res["ID"])
+
                 counter_new = counter_new + 1
 
                 if (counter_new % 1000 == 0 ):
