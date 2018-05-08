@@ -9,10 +9,11 @@ import tweetanalyzer.utils as utils
 
 READ_FROM_PICKLE=False
 MONGO_DATABASE='twitter_zeynep'
-MONGO_TABLE= 'userTweets_train'
-MONGO_NEW_USER_TABLE= 'user_new_train'
+MONGO_TABLE= 'userTweets_sample'
+MONGO_NEW_USER_TABLE= 'user_new_sample'
 
 
+user_dic={}
 
 def read_from_mongo():
     print("Initializing Mongo connection...")
@@ -35,25 +36,31 @@ def read_from_mongo():
         if(item_count % 100000==0):
             print("Processing item:"+str(item_count))
 
-        if "reTweetedUserId" not in tweet.keys() :
+        #skip tweets without hashtags
+        if "hashtags" not in tweet.keys() or tweet['hashtags'] is None or len(tweet['hashtags']) < 1:
             continue
-        #tokenize hashtag
-        retweeted_user_id = tweet['reTweetedUserId']
-        retweeted_tweetid = tweet['reTweetedTweetId']
+
+        #skip tweets without retweets
+        retweet_count=0
+        if "retweetCount" not in tweet.keys() or tweet['retweetCount']<1 or "reTweetedTweetId" in tweet.keys():
+            # focus only on Tweets with RetweetCount>0 and also being the original tweet
+            continue
+
+        user_id=tweet['userid']
         retweet_count= tweet['retweetCount']
 
         #Get previous user retweeteds
-        if retweeted_user_id in user_dic:
-            user_retweeted_dic = user_dic[retweeted_user_id]
+        if user_id in user_dic:
+            user_retweeted_dic = user_dic[user_id]
 
-        if retweeted_tweetid in user_retweeted_dic:
+        if user_id in user_retweeted_dic:
             #print("This retweete has already been counted. Skipping...")
             continue
         else:
             #retweetcount and tweet count(1 by default)
-            user_retweeted_dic[retweeted_tweetid]=(retweet_count,1)
+            user_retweeted_dic[user_id]=(retweet_count,1)
 
-        user_dic[retweeted_user_id]=user_retweeted_dic
+        user_dic[user_id]=user_retweeted_dic
 
     print("Now aggregating stats...")
 
@@ -128,7 +135,27 @@ def set_pandas_settings():
     pd.set_option('display.width', 320)
     pd.set_option('max_rows', 1000)
 
+def load_user_stats_from_mongo():
+
+    print("Initializing Mongo DB connection for user...")
+    client = MongoClient('localhost:27017')
+    db = client[MONGO_DATABASE]
+    print("Initializing Mongo connection success.")
+
+    users = db[MONGO_NEW_USER_TABLE].find()
+    for user in users:
+        user_id = int(user['user_id'])
+        retweet_ratio = user['retweet_ratio']
+        #total_tweet_count = user['total_tweet_count']
+        #total_retweeted_count = user['total_retweeted_count']
+
+        user_dic[user_id]=retweet_ratio
+
 
 if __name__ == "__main__":
     set_pandas_settings()
     stat_frequency()
+
+
+def get_user_stats(user_id):
+    return user_dic[user_id]
