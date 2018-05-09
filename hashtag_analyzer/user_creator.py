@@ -4,8 +4,8 @@ import operator
 import pandas as pd
 import pickle
 import json
-import tweetanalyzer.tokenizer as tokenizer
-import tweetanalyzer.utils as utils
+import hashtag_analyzer.tokenizer as tokenizer
+import hashtag_analyzer.utils as utils
 
 READ_FROM_PICKLE=False
 MONGO_DATABASE='twitter_zeynep'

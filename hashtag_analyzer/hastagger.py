@@ -1,5 +1,10 @@
 import numpy as np
-import tweetanalyzer.tokenizer as tokenizer
+import hashtag_analyzer.tokenizer as tokenizer
+
+#
+# This module contains methods to analyze the nature of a single/multiple Hashtags
+# i.e. if it is long,short, too much tokens in it, frequency...
+#
 
 
 hashtag_dic={}
