@@ -9,8 +9,8 @@ import tweetanalyzer.utils as utils
 
 READ_FROM_PICKLE=False
 MONGO_DATABASE='twitter_zeynep'
-MONGO_TABLE= 'userTweets_sample'
-MONGO_NEW_USER_TABLE= 'user_new_sample'
+MONGO_TABLE= 'userTweets_test'
+MONGO_NEW_USER_TABLE= 'user_new_test_1'
 
 
 user_dic={}

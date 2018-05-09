@@ -7,11 +7,13 @@ import json
 import tweetanalyzer.tokenizer as tokenizer
 import tweetanalyzer.hashtag_analyzer as hashtag_analyzer
 import tweetanalyzer.user_creator as user_creator
+import tweetanalyzer.utils as utils
 
 READ_FROM_PICKLE=False
 MONGO_DATABASE='twitter_zeynep'
-MONGO_TABLE= 'userTweets_sample'
-#MONGO_DATABASE='userTweets_test'
+MONGO_TABLE= 'userTweets_test'
+MONGO_TWEET_EFFECT_TABLE= 'processed_test'
+
 
 tweet_dic={}
 tweet_effects=[]
@@ -27,16 +29,17 @@ def analyze_tweets():
 
     first_time_hashtag={}
 
-    #scrapped_tweets = db[MONGO_TABLE].find()
-    scrapped_tweets = db[MONGO_TABLE].find().sort([("yearMonthDay",1)])
+    scrapped_tweets = db[MONGO_TABLE].find()
+    #scrapped_tweets = db[MONGO_TABLE].find().sort([("yearMonthDay",1)])
 
     hashtag_dic ={}
     item_count=0
 
     #First Pass for building dictionary
+    print("FIRST PASS: Building token/hashtag effects")
     for tweet in scrapped_tweets:
         item_count+=1
-        if(item_count % 1000==0):
+        if(item_count % 100000==0):
             print("Processing item:"+str(item_count))
             #print("Processing tweet with ID:"+str(tweet['_id']))
 
@@ -75,11 +78,13 @@ def analyze_tweets():
     user_creator.load_user_stats_from_mongo()
 
     #Second Pass for building tweet effects
-    scrapped_tweets = db[MONGO_TABLE].find().sort([("yearMonthDay", 1)])
+    print("SECOND PASS: Calculating Tweeter effects")
+    scrapped_tweets = db[MONGO_TABLE].find()
+    #scrapped_tweets = db[MONGO_TABLE].find().sort([("yearMonthDay", 1)])
     item_count=0
     for tweet in scrapped_tweets:
         item_count+=1
-        if(item_count % 1000==0):
+        if(item_count % 100000==0):
             print("Processing item:"+str(item_count))
 
         #skip tweets without hashtags
@@ -101,10 +106,19 @@ def analyze_tweets():
         #Calculate the tweet effect object ( row )
         process_tweet(user_id,hashtags,retweet_count,tweeet_id)
 
+    #Convert to Dataframe
+    df = pd.DataFrame(tweet_effects,columns = ['token_avg_retweet', 'token_frequency', 'token_char_length','token_is_all_upper',
+                  'hashtag_avg_retweet','hashtag_frequency','hashtag_char_length','hashtag_is_all_upper','hashtag_token_count',
+                  'tweet_is_first_time_hashtag','tweet_hashtag_count','tweet_total_char_length','tweet_retweet_count',
+                  'user_retweet_ratio']
+                      )
 
-    print(tokenizer.token_dic)
+    #print(tokenizer.token_dic)
+    #print(df)
     print("Number of tweets read from DB:"+str(item_count))
-    print("Total number of tweet effect processed samples :" + str(len(tweet_effects)))
+    print("Total number of tweet effect processed samples :" + str(len(df)))
+
+    utils.persist_df_to_mongo(df,MONGO_DATABASE,MONGO_TWEET_EFFECT_TABLE)
 
 
 def process_tweet(user_id,hashtags,retweet_count,tweet_id):
@@ -127,6 +141,8 @@ def process_tweet(user_id,hashtags,retweet_count,tweet_id):
     #combine them all to get the whole tweeter effect object
     tweet_effect = set1 + set2 + set3 + set4
     tweet_effects.append(tweet_effect)
+
+
 
 
 def stat_frequency():
@@ -163,7 +179,7 @@ def stat_frequency():
     df = df.sort_values(by=['retweet_count'], ascending=[False])
     print(df.head(100))
 
-    print("Persisting hashtags to mongo")
+    print("Persisting hashtags to mongo"),
 
     #persist stats to db
     df = df.sort_values(by=['hashtag'], ascending=[True])
@@ -183,11 +199,6 @@ def only_turkish_chars(s):
         return False
 
 
-def set_pandas_settings():
-    pd.set_option('display.width', 320)
-    pd.set_option('max_rows', 1000)
-
-
 if __name__ == "__main__":
-    set_pandas_settings()
+    utils.set_pandas_settings()
     analyze_tweets()
