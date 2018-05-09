@@ -1,13 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets, linear_model
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error,mean_absolute_error, r2_score
 import tweetanalyzer.utils as utils
 import tweetanalyzer.tweet_analyzer as tweet_analyzer
 #import sklearn.model_selection.train_test_split as train_test_split
 from sklearn.model_selection import train_test_split
 from math import sqrt
 from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
 
 
 TWEET_EFFECT_TRAIN_TABLE='processed_1'
@@ -32,7 +34,6 @@ def base_model_pred():
     tweets_y_pred = tweets_predict['user_retweet_ratio']
 
     print("Root Mean squared error: %.2f" % sqrt(mean_squared_error(tweets_Y, tweets_y_pred)))
-
     # Explained variance score: 1 is perfect prediction
     print('Variance score: %.2f' % r2_score(tweets_Y, tweets_y_pred))
 
@@ -50,36 +51,48 @@ def linear_regression_pred():
 
     X_train,X_test,Y_train,Y_test = train_test_split(tweets_X,tweets_Y,test_size=0.25,random_state=42)
 
+    robust_scaler = RobustScaler()
+    #Scale features with robust scaler
+    #print("Scaling with Train/Test data with Robust Scaler")
+    ##X_train = robust_scaler.fit_transform(X_train)
+    ##X_test = robust_scaler.transform(X_test)
+
     X_pred=tweets_predict[feature_columns]
+    ##X_pred = robust_scaler.transform(X_pred)
     Y_pred = tweets_predict[target_column]
 
+
     # Create linear regression object
-    regr = linear_model.LinearRegression()
+    #regr = linear_model.LinearRegression()
+    #Linear regression with Ridge regularization
 
     # Train the model using the training sets
+    regr = Lasso(alpha=1e-10,max_iter=1e5)
     regr.fit(X_train, Y_train)
 
-    # Make predictions using the testing set
+    # Make predictions using the validation set
     tweets_y_pred = regr.predict(X_test)
 
-    # TRAIN/VALIDATION coefficients
+    # ------------------
+    # TRAIN/VALIDATION
+    # ------------------
     print('TRAIN Coefficients: \n', regr.coef_)
     # The root mean squared error
     #print("Mean squared error: %.2f" % mean_squared_error(Y_test, tweets_y_pred))
     print("TRAIN Root Mean squared error: %.2f" % sqrt(mean_squared_error(Y_test, tweets_y_pred)))
+    print("TRAIN Mean Absolute error: %.2f" % mean_absolute_error(Y_test, tweets_y_pred))
     # Explained variance score: 1 is perfect prediction
     print('TRAIN Variance score: %.2f' % r2_score(Y_test, tweets_y_pred))
 
-    # Train the model using the training sets
 
+    #-------------------
+    # TEST
+    # -------------------
     # Make predictions using the testing set
     tweets_y_pred = regr.predict(X_pred)
-
-    # TEST coefficients
-    print('TEST Coefficients: \n', regr.coef_)
     # The root mean squared error
-    #print("Mean squared error: %.2f" % mean_squared_error(Y_test, tweets_y_pred))
     print("TEST Root Mean squared error: %.2f" % sqrt(mean_squared_error(Y_pred, tweets_y_pred)))
+    print("TEST Mean Absolute error: %.2f" % mean_absolute_error(Y_pred, tweets_y_pred))
     # Explained variance score: 1 is perfect prediction
     print('TEST Variance score: %.2f' % r2_score(Y_pred, tweets_y_pred))
 
