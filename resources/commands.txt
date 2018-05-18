@@ -1,0 +1,2 @@
+C:\Program Files\MongoDB\Server\3.6\bin>mongod
+C:\Users\math\PycharmProjects\WebMining>scrapy crawl TweetScraper -a query="besiktas,beşiktaşk,#besiktas,#beşiktaş,#beşiktaşk" -a crawl_user=True

@@ -21,6 +21,7 @@ feature_columns = ['hashtag_avg_retweet', 'hashtag_char_length', 'hashtag_freque
                    'token_char_length', 'token_frequency', 'token_is_all_upper',
                    'tweet_hashtag_count', 'tweet_is_first_time_hashtag',
                    'tweet_total_char_length', 'user_retweet_ratio']
+
 target_column = 'tweet_retweet_count'
 
 

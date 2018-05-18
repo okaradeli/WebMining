@@ -154,7 +154,7 @@ def stat_frequency():
     else:
         print("Reading from mongodb... ")
         df = analyze_tweets()
-        pickle.dump(df, open("tweet_pickle.p", "wb"))
+        #pickle.dump(df, open("tweet_pickle.p", "wb"))
 
     print("Number of tweet hashtag loaded "+str(len(df)))
     print("hashtag summary:")
